@@ -1,4 +1,4 @@
-const initialCards = [
+export const initialCards = [
     {
       name: "Калипсо",
       link: "https://images.unsplash.com/photo-1531123414780-f74242c2b052?auto=format&fit=crop&q=60&w=500&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDJ8fHxlbnwwfHx8fHw%3D",
