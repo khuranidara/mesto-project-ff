@@ -1,4 +1,5 @@
 import './pages/index.css'; // добавьте импорт главного файла стилей
+import './scripts/popups.js';
 import { initialCards } from './scripts/cards.js';
 
 // @todo: Темплейт карточки
