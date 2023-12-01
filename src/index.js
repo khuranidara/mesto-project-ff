@@ -1,6 +1,9 @@
 import './pages/index.css'; // добавьте импорт главного файла стилей
 import './scripts/popups.js';
+import { openImagePopup } from './scripts/popups.js';
 import { initialCards } from './scripts/cards.js';
+import { handleFormSubmit } from './scripts/profile_form.js';
+import { createCard, renderCards, handleAddCardFormSubmit } from './scripts/new_cards_form.js';
 
 // @todo: Темплейт карточки
 
@@ -12,33 +15,3 @@ import { initialCards } from './scripts/cards.js';
 
 // @todo: Вывести карточки на страницу
 
-function createCard(data) {
-  // Шаг 1: Клонирование шаблона
-  const cardTemplate = document.querySelector("#card-template").content;
-  const cardElement = cardTemplate.cloneNode(true);
-  
-  // Шаг 2: Установка значений вложенных элементов
-  const cardImage = cardElement.querySelector(".card__image");
-  const cardTitle = cardElement.querySelector(".card__title");
-  
-  cardImage.src = data.link;
-  cardImage.alt = data.name;
-  cardTitle.textContent = data.name;
-
-  // Шаг 3: Добавление обработчика для иконки удаления
-  const deleteIcon = cardElement.querySelector(".card__delete-button");
-  deleteIcon.addEventListener("click", evt => {
-      const cardElement = evt.target.closest(".card");
-      cardElement.remove();
-  });
-
-  return cardElement;
-}
-
-const placesList = document.querySelector(".places__list");
-
-function renderCards() {
-  initialCards.forEach(cardElement => placesList.append(createCard(cardElement)));
-}
-
-renderCards();

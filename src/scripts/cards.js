@@ -21,7 +21,7 @@ export const initialCards = [
     },
     {
       name: "Райский риф",
-      link: "https://images.unsplash.com/photo-1548833925-d8ef00b4a8de?auto=format&fit=crop&q=80&w=1935&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      link: "https://img.freepik.com/free-photo/vertical-shot-of-a-white-building-under-the-clear-sky_181624-4575.jpg?size=626&ext=jpg&ga=GA1.1.901499153.1701343937&semt=sph",
     }
 ];
 
