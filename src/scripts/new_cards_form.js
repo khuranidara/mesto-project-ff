@@ -1,5 +1,6 @@
 import { initialCards } from './cards.js';
-import { closePopup, popup1 } from './popups.js';
+import { closePopup, popup1, openImagePopup } from './popups.js';
+
 
 function handleLikeClick(evt) {
     evt.target.classList.toggle('card__like-button_is-active');

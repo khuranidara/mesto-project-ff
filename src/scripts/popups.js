@@ -18,11 +18,20 @@ popup.forEach( function(b) {
 
 function openPopup(a) {
     a.classList.add('popup_is-opened');
+    a.style.opacity = 0;
+    a.style.visibility = 'visible';
+    setTimeout(() => {
+        a.style.opacity = 1;
+    }, 10); // Задержка для начала анимации
     document.addEventListener('keydown', esc);
 };
-  
+
 export function closePopup(a) {
-    a.classList.remove('popup_is-opened');
+    a.style.opacity = 0;
+    setTimeout(() => {
+        a.style.visibility = 'hidden';
+        a.classList.remove('popup_is-opened');
+    }, 600); // Задержка для полного завершения анимации
     document.removeEventListener('keydown', esc);
 };
 
@@ -36,7 +45,7 @@ addButton.addEventListener('click', () => {
     openPopup(popup1);
 });
 
-function openImagePopup(imageSrc, imageCaption) {
+export function openImagePopup(imageSrc, imageCaption) {
     const imagePopup = document.querySelector('.popup_type_image');
     const popupImage = imagePopup.querySelector('.popup__image');
     const popupCaption = imagePopup.querySelector('.popup__caption');
@@ -47,5 +56,3 @@ function openImagePopup(imageSrc, imageCaption) {
 
     openPopup(imagePopup);
 };
-
-export { openImagePopup };
