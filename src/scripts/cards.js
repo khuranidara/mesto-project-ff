@@ -24,4 +24,3 @@ export const initialCards = [
       link: "https://img.freepik.com/free-photo/vertical-shot-of-a-white-building-under-the-clear-sky_181624-4575.jpg?size=626&ext=jpg&ga=GA1.1.901499153.1701343937&semt=sph",
     }
 ];
-
