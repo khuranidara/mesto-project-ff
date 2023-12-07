@@ -59,6 +59,9 @@ function handleFormSubmit(evt) {
     profileName.textContent = nameValue;
     profileJob.textContent = jobValue; // Выберите элементы, куда должны быть вставлены значения полей
     // Вставьте новые значения с помощью textContent
+
+    // Закрытие попапа после успешного сабмита
+    closePopup(profilePopup);
 }
 
 // Прикрепляем обработчик к форме:

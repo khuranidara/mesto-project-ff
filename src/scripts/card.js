@@ -21,7 +21,7 @@ function handleCardClick(imageSrc, imageName) {
     openImagePopup(imageSrc, imageName);
 }
 // Функция для создания карточки
-export function createCard(data, handleLike, handleDelete, handleCardClick) {
+export function createCard(data, handleLike, handleDeleteCard, handleCardClick) {
   const cardElement = cardTemplate.cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");

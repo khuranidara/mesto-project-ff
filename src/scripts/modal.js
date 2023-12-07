@@ -3,6 +3,9 @@ export const addButton = document.querySelector('.profile__add-button');
 export const addPopup = document.querySelector('.popup_type_new-card');
 export const profilePopup = document.querySelector('.popup_type_edit');
 export const popups = document.querySelectorAll('.popup');
+const imagePopup = document.querySelector('.popup_type_image');
+const popupImage = imagePopup.querySelector('.popup__image');
+const popupCaption = imagePopup.querySelector('.popup__caption');
 import { nameInput, jobInput, profileJob, profileName } from "../index.js";
 
 export function esc(evt) {
@@ -36,9 +39,6 @@ addButton.addEventListener('click', () => {
 });
 
 export function openImagePopup(imageSrc, imageCaption) {
-    const imagePopup = document.querySelector('.popup_type_image');
-    const popupImage = imagePopup.querySelector('.popup__image');
-    const popupCaption = imagePopup.querySelector('.popup__caption');
 
     popupImage.src = imageSrc;
     popupImage.alt = imageCaption;
