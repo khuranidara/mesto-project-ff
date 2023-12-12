@@ -7,6 +7,7 @@ const imagePopup = document.querySelector('.popup_type_image');
 const popupImage = imagePopup.querySelector('.popup__image');
 const popupCaption = imagePopup.querySelector('.popup__caption');
 import { nameInput, jobInput, profileJob, profileName } from "../index.js";
+import {clearValidationError} from "./validation.js";
 
 export function esc(evt) {
     evt.code === 'Escape' && closePopup(document.querySelector('.popup_is-opened'));
@@ -26,6 +27,7 @@ export function openPopup(popupElement) {
 export function closePopup(popupElement) {
     popupElement.classList.remove('popup_is-opened');
     document.removeEventListener('keydown', esc);
+    clearValidationError();
 };
 
 editButton.addEventListener('click', function() {

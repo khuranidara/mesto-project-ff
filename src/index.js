@@ -1,8 +1,10 @@
 import './pages/index.css'; // добавьте импорт главного файла стилей
+import './scripts/validation.js';
+import './scripts/card.js';
+import './scripts/modal.js';
+
 import {
-  createCard,
   addCardForm,
-  renderCards,
   cardNameInput,
   cardLinkInput,
   placesList,
@@ -10,11 +12,7 @@ import {
 } from './scripts/card.js';
 
 import {
-  openPopup,
   closePopup,
-  esc,
-  editButton,
-  addButton,
   addPopup,
   profilePopup
 } from './scripts/modal.js';
