@@ -24,8 +24,10 @@ export const profileName = document.querySelector('.profile__title');
 export const profileJob = document.querySelector('.profile__description');
 const avatarElement = document.querySelector('.profile__image');
 import { renderCards } from './scripts/card.js';
-const cohortId = "wff-cohort-2";
-const token = "f607a7d2-acc8-4a4e-8521-3c1435e4561a";
+export const cohortId = "wff-cohort-2";
+export const token = "f607a7d2-acc8-4a4e-8521-3c1435e4561a";
+
+
 
 
 // Обработчик «отправки» формы, хотя пока
@@ -133,7 +135,6 @@ const userDataRequest = fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`
         }
         return response.json();
     });
-
 // Запрос на карточки
 const cardsRequest = fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
     method: 'GET',
@@ -148,14 +149,23 @@ const cardsRequest = fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
         }
         return response.json();
     });
+export let currentUserId;
 Promise.all([userDataRequest, cardsRequest])
-    .then(([userData, cards]) => {
+    .then(([userData, cardsData]) => {
+        console.log(userData);
+        console.log(cardsData);
+        currentUserId = userData._id;
+        cardsData.forEach(card => {
+            // ваш код, например, вы можете обновить состояние для каждой карточки
+            console.log(card._id);
+        });
+        console.log(currentUserId);
         // Обновление элементов в шапке страницы с использованием данных пользователя
         profileName.textContent = userData.name; // Используем существующую переменную
         profileJob.textContent = userData.about; // Используем существующую переменную
         avatarElement.style.backgroundImage = `url(${userData.avatar})`;
 
         // Обновление карточек на странице с использованием данных с сервера
-        renderCards(cards);
+        renderCards(cardsData);
     })
     .catch(error => console.error('Ошибка:', error));

@@ -8,6 +8,9 @@ const popupImage = imagePopup.querySelector('.popup__image');
 const popupCaption = imagePopup.querySelector('.popup__caption');
 import { nameInput, jobInput, profileJob, profileName } from "../index.js";
 import {clearValidationErrors, toggleButtonState} from "./validation.js";
+const avatarImage = document.querySelector('.profile__image');
+const editAvatarPopup = document.querySelector('.popup_type_edit-avatar');
+const editAvatarSubmitButton = editAvatarPopup.querySelector('.popup__button');
 export function esc(evt) {
     evt.code === 'Escape' && closePopup(document.querySelector('.popup_is-opened'));
 }
@@ -71,3 +74,6 @@ export function openImagePopup(imageSrc, imageCaption) {
 
     openPopup(imagePopup);
 };
+avatarImage.addEventListener('click', () => {
+    openPopup(editAvatarPopup, editAvatarSubmitButton);
+});
