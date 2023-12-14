@@ -1,63 +1,57 @@
-const popupName = document.querySelector('.popup__input_type_name');
-const popupDesc = document.querySelector('.popup__input_type_description');
 const profilePopup = document.querySelector('.popup_type_edit');
 const editProfilePopupForm=  profilePopup.querySelector('.popup__form');
-const inputList = Array.from(editProfilePopupForm.querySelectorAll('.popup__input'));
-const editProfilePopupSpanName =  editProfilePopupForm.querySelector('.error_name');
-const editProfilePopupSpanDesc =  editProfilePopupForm.querySelector('.error_description');
-const saveButton = editProfilePopupForm.querySelector('.button');
-const errorList = Array.from(editProfilePopupForm.querySelectorAll('.error'));
-
-
-popupName.addEventListener('input', checkPopupName);
-function checkPopupName(e) {
-    if(e.target.validity.patternMismatch){
-        e.target.setCustomValidity('Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы.');
-    }
-    else {
-        e.target.setCustomValidity("");
+const editProfileSubmitButton = editProfilePopupForm.querySelector('.button');
+const newPlacePopup = document.querySelector('.popup_type_new-card');
+const newPlacePopupForm = newPlacePopup.querySelector('.popup__form');
+const newPlaceSubmitButton = newPlacePopupForm.querySelector('.button');
+function validateInput(inputElement, errorElement) {
+    if (inputElement.validity.patternMismatch) {
+        inputElement.setCustomValidity('Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы.');
+    } else {
+        inputElement.setCustomValidity("");
     }
 
-    if(!popupName.validity.valid){
-        editProfilePopupSpanName.innerHTML = popupName.validationMessage;
-    }else {
-        editProfilePopupSpanName.innerHTML = "";
+    if (!inputElement.validity.valid) {
+        errorElement.textContent = inputElement.validationMessage;
+    } else {
+        errorElement.textContent = "";
     }
-    toggleButtonState(); // Обновить состояние кнопки
 }
 
-popupDesc.addEventListener('input', checkPopupDesc);
-function checkPopupDesc(e) {
-    if (e.target.validity.patternMismatch) {
-        e.target.setCustomValidity('Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы.');
-    } else {
-        e.target.setCustomValidity("");
-    }
-
-    if (!popupDesc.validity.valid) {
-        editProfilePopupSpanDesc.innerHTML = popupDesc.validationMessage;
-    } else {
-        editProfilePopupSpanDesc.innerHTML = "";
-    }
-    toggleButtonState(); // Обновить состояние кнопки
+export function toggleButtonState(formElement, submitButton) {
+    const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+    const hasInvalidInputs = inputList.some((inputElement) => !inputElement.validity.valid);
+    submitButton.disabled = hasInvalidInputs;
 }
 
-// Функция принимает массив полей
-const hasInvalidInput = (inputList) => {
-    return inputList.some((inputElement) => {
-        return !inputElement.validity.valid;
+// Для формы "Редактировать профиль"
+editProfilePopupForm.addEventListener('input', function (e) {
+    editProfilePopupForm.classList.remove('disable-invalid-styles');
+    const inputElement = e.target;
+    const errorElement = editProfilePopupForm.querySelector(`.error_${inputElement.name}`);
+    validateInput(inputElement, errorElement);
+    toggleButtonState(editProfilePopupForm, editProfileSubmitButton);
+});
+
+// Для формы "Новое место"
+newPlacePopupForm.addEventListener('input', function (e) {
+    // Удаляем класс, чтобы включить стили :invalid после первого взаимодействия
+    newPlacePopupForm.classList.remove('disable-invalid-styles');
+    const inputElement = e.target;
+    const errorElement = newPlacePopupForm.querySelector(`.error_${inputElement.name}`);
+    validateInput(inputElement, errorElement);
+    toggleButtonState(newPlacePopupForm, newPlaceSubmitButton);
+});
+
+export function clearValidationErrors(formElement) {
+    const inputList = formElement.querySelectorAll('.popup__input');
+    const errorList = formElement.querySelectorAll('.error');
+
+    inputList.forEach(input => {
+        input.setCustomValidity(''); // Сброс кастомных сообщений валидации
     });
-};
 
-const toggleButtonState = () => {
-    if (hasInvalidInput(inputList)) {
-        saveButton.setAttribute('disabled', 'disabled');
-    } else {
-        saveButton.removeAttribute('disabled');
-    }
-};
-
-export function clearValidationError() {
-    errorList.forEach((errorElement) => errorElement.innerHTML = "");
-    saveButton.removeAttribute('disabled');
+    errorList.forEach(error => {
+        error.textContent = ''; // Очистка текста ошибок
+    });
 }

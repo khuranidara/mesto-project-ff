@@ -51,5 +51,5 @@ renderCards(initialCards);
 
 // Функция для создания новой карточки
 export function createNewCard(name, link) {
- return createCard({ name, link }, handleLikeClick, handleDeleteCard, handleCardClick);
+    return  createCard({ name, link }, handleLikeClick, handleDeleteCard, handleCardClick);
 }
