@@ -1,5 +1,6 @@
 import { openImagePopup } from './modal.js';
 import {currentUserId, cohortId, token, cardsDataId} from '../index.js'
+import * as api from './api';
 
 export const addCardForm = document.querySelector('.popup__form[name="new-place"]');
 export const cardNameInput = addCardForm.querySelector('.popup__input_type_card-name');
@@ -12,19 +13,8 @@ function handleLikeClick(evt, cardId, likeCount) {
         console.error('Ошибка: не указан cardId');
         return;
     }
-    fetch(`https://nomoreparties.co/v1/${cohortId}/cards/likes/${cardId}`, {
-    method: evt.target.classList.contains('card__like-button_is-active') ? 'DELETE' : 'PUT',
-    headers: {
-        'Authorization': `${token}`,
-        'Content-Type': 'application/json',
-    },
-})
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-        }
-        return response.json();
-    })
+    const isLiked = evt.target.classList.contains('card__like-button_is-active');
+    api.likeCard(cardId, isLiked)
     .then(updatedCardData => {
         evt.target.classList.toggle('card__like-button_is-active');
         likeCount.textContent = updatedCardData.likes.length;
@@ -32,8 +22,13 @@ function handleLikeClick(evt, cardId, likeCount) {
     .catch(error => console.error('Ошибка:', error));
 }
 
-function handleDeleteCard(evt) {
-    evt.target.closest(".card").remove();
+function handleDeleteCard(evt, cardId) {
+    api.deleteCard(cardId)
+        .then(() => {
+            evt.target.closest(".card").remove();
+            console.log(`Карточка с ID ${cardId} удалена успешно.`);
+        })
+        .catch(error => console.error('Ошибка при удалении карточки:', error));
 }
 
 function handleCardClick(imageSrc, imageName) {
@@ -57,7 +52,7 @@ export function createCard(data, handleLike, handleDeleteCard, handleCardClick) 
     if (data.owner._id !== currentUserId) {
         deleteIcon.remove();
     } else {
-        deleteIcon.addEventListener("click", handleDeleteCard);
+        deleteIcon.addEventListener("click", (evt) => handleDeleteCard(evt, data._id));
     }
     cardImage.addEventListener('click', () => handleCardClick(data.link, data.name));
     likeButton.addEventListener('click', (evt) => handleLikeClick(evt, data._id, likeCount));

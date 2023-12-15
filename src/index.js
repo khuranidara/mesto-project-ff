@@ -31,6 +31,7 @@ export let currentUserId;
 import {updateAvatarPopup, editProfileSubmitButton, newPlaceSubmitButton} from './scripts/validation.js';
 const updateAvatarPopupInput = updateAvatarPopup.querySelector('.popup__input_type_avatar-link');
 
+import * as api from './scripts/api.js';
 
 
 
@@ -46,23 +47,7 @@ function handleAddCardFormSubmit(evt) {
 
     newPlaceSubmitButton.textContent = 'Сохранение...';
 
-    fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `${token}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            name: cardName,
-            link: cardLink,
-        }),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        })
+    api.addCard(cardName, cardLink)
         .then(newCardData => {
             const newCard = createNewCard(newCardData);
             placesList.prepend(newCard);// Добавляем карточку в начало списка
@@ -99,25 +84,7 @@ function handleEditProfileFormSubmit(evt) {
     // Изменение текста кнопки на "Сохранение..."
     editProfileSubmitButton.textContent = 'Сохранение...';
 
-    // PATCH-запрос на сервер
-    fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
-        method: 'PATCH',
-        headers: {
-            'Authorization': `${token}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            name: nameValue,
-            about: jobValue,
-        }),
-    })
-        .then(response => {
-            console.log(response); // Вывести ответ сервера в консоль
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        })
+    api.editProfile(nameValue, jobValue)
         .then(updatedUserData => {
             avatarElement.style.backgroundImage = `url(${updatedUserData.avatar})`;
             // Обновление данные на странице с использованием полученных данных
@@ -145,23 +112,7 @@ updateAvatarPopup.addEventListener('submit', (event) => {
 
     editAvatarSubmitButton.textContent = 'Сохранение...';
 
-    // Отправка PATCH-запроса на сервер
-    fetch(`https://nomoreparties.co/v1/${cohortId}/users/me/avatar`, {
-        method: 'PATCH',
-        headers: {
-            'Authorization': `${token}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            avatar: newAvatarLink,
-        }),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        })
+    api.updateAvatar(newAvatarLink)
         .then(updatedUserData => {
             // Обновление изображения аватара на странице
             avatarElement.style.backgroundImage = `url(${updatedUserData.avatar})`;
@@ -177,33 +128,10 @@ updateAvatarPopup.addEventListener('submit', (event) => {
 });
 
 // Запрос на данные пользователя
-const userDataRequest = fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
-    method: 'GET',
-    headers: {
-        'Authorization': `${token}`,
-        'Content-Type': 'application/json',
-    },
-})
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-        }
-        return response.json();
-    });
+const userDataRequest = api.getUserData();
+
 // Запрос на карточки
-const cardsRequest = fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
-    method: 'GET',
-    headers: {
-        'Authorization': `${token}`,
-        'Content-Type': 'application/json',
-    },
-})
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-        }
-        return response.json();
-    });
+const cardsRequest = api.getCardsData();
 
 Promise.all([userDataRequest, cardsRequest])
     .then(([userData, cardsData]) => {
@@ -211,16 +139,14 @@ Promise.all([userDataRequest, cardsRequest])
         console.log(cardsData);
         currentUserId = userData._id;
         cardsData.forEach(card => {
-            // ваш код, например, вы можете обновить состояние для каждой карточки
             console.log(card._id);
         });
         console.log(currentUserId);
-        // Обновление элементов в шапке страницы с использованием данных пользователя
-        profileName.textContent = userData.name; // Используем существующую переменную
-        profileJob.textContent = userData.about; // Используем существующую переменную
+
+        profileName.textContent = userData.name;
+        profileJob.textContent = userData.about;
         avatarElement.style.backgroundImage = `url(${userData.avatar})`;
 
-        // Обновление карточек на странице с использованием данных с сервера
         renderCards(cardsData);
     })
     .catch(error => console.error('Ошибка:', error));
