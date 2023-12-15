@@ -12,9 +12,10 @@ import {
 } from './scripts/card.js';
 
 import {
-  closePopup,
-  addPopup,
-  profilePopup
+    editAvatarSubmitButton,
+    closePopup,
+    addPopup,
+    profilePopup,
 } from './scripts/modal.js';
 
 const editProfileForm = document.querySelector('.popup__form[name="edit-profile"]');
@@ -26,6 +27,9 @@ const avatarElement = document.querySelector('.profile__image');
 import { renderCards } from './scripts/card.js';
 export const cohortId = "wff-cohort-2";
 export const token = "f607a7d2-acc8-4a4e-8521-3c1435e4561a";
+export let currentUserId;
+import {updateAvatarPopup, editProfileSubmitButton, newPlaceSubmitButton} from './scripts/validation.js';
+const updateAvatarPopupInput = updateAvatarPopup.querySelector('.popup__input_type_avatar-link');
 
 
 
@@ -39,6 +43,8 @@ function handleAddCardFormSubmit(evt) {
 
     const cardName = cardNameInput.value;
     const cardLink = cardLinkInput.value;
+
+    newPlaceSubmitButton.textContent = 'Сохранение...';
 
     fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
         method: 'POST',
@@ -58,13 +64,16 @@ function handleAddCardFormSubmit(evt) {
             return response.json();
         })
         .then(newCardData => {
-            const newCard = createNewCard(newCardData.name, newCardData.link);
+            const newCard = createNewCard(newCardData);
             placesList.prepend(newCard);// Добавляем карточку в начало списка
 
             closePopup(addPopup);
             addCardForm.reset(); // Очищаем форму
         })
-        .catch(error => console.error('Ошибка:', error));
+        .catch(error => console.error('Ошибка:', error))
+        .finally(() => {
+            newPlaceSubmitButton.textContent = 'Сохранить';
+        });
 }
 
 // Прикрепляем обработчик к форме:
@@ -86,6 +95,10 @@ function handleEditProfileFormSubmit(evt) {
     profileName.textContent = nameValue;
     profileJob.textContent = jobValue; // Выбераем элементы, куда должны быть вставлены значения полей
     // Вставляем новые значения с помощью textContent
+
+    // Изменение текста кнопки на "Сохранение..."
+    editProfileSubmitButton.textContent = 'Сохранение...';
+
     // PATCH-запрос на сервер
     fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
         method: 'PATCH',
@@ -114,12 +127,54 @@ function handleEditProfileFormSubmit(evt) {
             // Закрываем попап редактирования профиля
             closePopup(profilePopup);
         })
-        .catch(error => console.error('Ошибка:', error));
+        .catch(error => console.error('Ошибка:', error))
+        .finally(() => {
+            // Возвращение исходного текста кнопки
+            editProfileSubmitButton.textContent = 'Сохранить';
+        });
 }
 
 // Прикрепляем обработчик к форме:
 // он будет следить за событием “submit” - «отправка»
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
+
+updateAvatarPopup.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const newAvatarLink = updateAvatarPopupInput.value;
+
+    editAvatarSubmitButton.textContent = 'Сохранение...';
+
+    // Отправка PATCH-запроса на сервер
+    fetch(`https://nomoreparties.co/v1/${cohortId}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            avatar: newAvatarLink,
+        }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(updatedUserData => {
+            // Обновление изображения аватара на странице
+            avatarElement.style.backgroundImage = `url(${updatedUserData.avatar})`;
+
+            // Закрытие формы после успешного обновления
+            closePopup(updateAvatarPopup);
+        })
+        .catch(error => console.error('Ошибка:', error))
+        .finally(() => {
+            // Возвращение исходного текста кнопки
+            editAvatarSubmitButton.textContent = 'Сохранить';
+        });
+});
 
 // Запрос на данные пользователя
 const userDataRequest = fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
@@ -149,7 +204,7 @@ const cardsRequest = fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
         }
         return response.json();
     });
-export let currentUserId;
+
 Promise.all([userDataRequest, cardsRequest])
     .then(([userData, cardsData]) => {
         console.log(userData);

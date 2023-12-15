@@ -10,7 +10,7 @@ import { nameInput, jobInput, profileJob, profileName } from "../index.js";
 import {clearValidationErrors, toggleButtonState} from "./validation.js";
 const avatarImage = document.querySelector('.profile__image');
 const editAvatarPopup = document.querySelector('.popup_type_edit-avatar');
-const editAvatarSubmitButton = editAvatarPopup.querySelector('.popup__button');
+export const editAvatarSubmitButton = editAvatarPopup.querySelector('.popup__button');
 export function esc(evt) {
     evt.code === 'Escape' && closePopup(document.querySelector('.popup_is-opened'));
 }
@@ -53,6 +53,11 @@ export function closePopup(popupElement) {
     // Если форма найдена, вызываем clearValidationErrors
     if (formElement) {
         clearValidationErrors(formElement);
+        // Очищаем значение инпута в форме "Обновить аватар"
+        const inputElement = formElement.querySelector('.popup__input_type_avatar-link');
+        if (inputElement) {
+            inputElement.value = '';
+        }
     }
 };
 

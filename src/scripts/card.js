@@ -7,7 +7,12 @@ export const cardLinkInput = addCardForm.querySelector('.popup__input_type_url')
 export const placesList = document.querySelector(".places__list");
 export const cardTemplate = document.querySelector("#card-template").content;
 
-function handleLikeClick(evt, cardId, likeCount) {    fetch(`https://nomoreparties.co/v1/${cohortId}/cards/likes/${cardId}`, {
+function handleLikeClick(evt, cardId, likeCount) {
+    if (!cardId) {
+        console.error('Ошибка: не указан cardId');
+        return;
+    }
+    fetch(`https://nomoreparties.co/v1/${cohortId}/cards/likes/${cardId}`, {
     method: evt.target.classList.contains('card__like-button_is-active') ? 'DELETE' : 'PUT',
     headers: {
         'Authorization': `${token}`,
@@ -46,7 +51,7 @@ export function createCard(data, handleLike, handleDeleteCard, handleCardClick) 
     cardImage.src = data.link;
     cardImage.alt = data.name;
     cardTitle.textContent = data.name;
-    likeCount.textContent = data.likes.length; // Устанавливаем начальное количество лайков
+    likeCount.textContent = data.likes ? data.likes.length : 0; // Устанавливаем начальное количество лайков
 
     // Добавляем проверку на принадлежность карточки текущему пользователю
     if (data.owner._id !== currentUserId) {
@@ -67,6 +72,6 @@ export function renderCards(cards) {
     });
 }
 
-export function createNewCard(name, link) {
-    return createCard({ name, link }, handleLikeClick, handleDeleteCard, handleCardClick);
+export function createNewCard(cardData) {
+    return createCard(cardData, handleLikeClick, handleDeleteCard, handleCardClick);
 }

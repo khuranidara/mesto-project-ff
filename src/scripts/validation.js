@@ -1,9 +1,12 @@
 const profilePopup = document.querySelector('.popup_type_edit');
 const editProfilePopupForm=  profilePopup.querySelector('.popup__form');
-const editProfileSubmitButton = editProfilePopupForm.querySelector('.button');
+export const editProfileSubmitButton = editProfilePopupForm.querySelector('.button');
 const newPlacePopup = document.querySelector('.popup_type_new-card');
 const newPlacePopupForm = newPlacePopup.querySelector('.popup__form');
-const newPlaceSubmitButton = newPlacePopupForm.querySelector('.button');
+export const newPlaceSubmitButton = newPlacePopupForm.querySelector('.button');
+export const updateAvatarPopup = document.querySelector('.popup_type_edit-avatar');
+const updateAvatarPopupForm =updateAvatarPopup.querySelector('.popup__form');
+const updateAvatarSubmitButton = updateAvatarPopupForm.querySelector('.button');
 function validateInput(inputElement, errorElement) {
     if (inputElement.validity.patternMismatch) {
         inputElement.setCustomValidity('Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы.');
@@ -22,6 +25,19 @@ export function toggleButtonState(formElement, submitButton) {
     const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
     const hasInvalidInputs = inputList.some((inputElement) => !inputElement.validity.valid);
     submitButton.disabled = hasInvalidInputs;
+}
+
+export function clearValidationErrors(formElement) {
+    const inputList = formElement.querySelectorAll('.popup__input');
+    const errorList = formElement.querySelectorAll('.error');
+
+    inputList.forEach(input => {
+        input.setCustomValidity(''); // Сброс кастомных сообщений валидации
+    });
+
+    errorList.forEach(error => {
+        error.textContent = ''; // Очистка текста ошибок
+    });
 }
 
 // Для формы "Редактировать профиль"
@@ -43,15 +59,11 @@ newPlacePopupForm.addEventListener('input', function (e) {
     toggleButtonState(newPlacePopupForm, newPlaceSubmitButton);
 });
 
-export function clearValidationErrors(formElement) {
-    const inputList = formElement.querySelectorAll('.popup__input');
-    const errorList = formElement.querySelectorAll('.error');
-
-    inputList.forEach(input => {
-        input.setCustomValidity(''); // Сброс кастомных сообщений валидации
-    });
-
-    errorList.forEach(error => {
-        error.textContent = ''; // Очистка текста ошибок
-    });
-}
+//Для формы "Обновить аватар"
+updateAvatarPopupForm.addEventListener('input', function (e) {
+    updateAvatarPopupForm.classList.remove('disable-invalid-styles');
+    const inputElement = e.target;
+    const errorElement = updateAvatarPopupForm.querySelector(`.error_${inputElement.name}`);
+    validateInput(inputElement, errorElement);
+    toggleButtonState(updateAvatarPopupForm, updateAvatarSubmitButton);
+});
