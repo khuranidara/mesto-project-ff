@@ -5,8 +5,8 @@ const newPlacePopup = document.querySelector('.popup_type_new-card');
 const newPlacePopupForm = newPlacePopup.querySelector('.popup__form');
 export const newPlaceSubmitButton = newPlacePopupForm.querySelector('.button');
 export const updateAvatarPopup = document.querySelector('.popup_type_edit-avatar');
-const updateAvatarPopupForm =updateAvatarPopup.querySelector('.popup__form');
-const updateAvatarSubmitButton = updateAvatarPopupForm.querySelector('.button');
+export const updateAvatarPopupForm =updateAvatarPopup.querySelector('.popup__form');
+export const updateAvatarSubmitButton = updateAvatarPopupForm.querySelector('.button');
 function validateInput(inputElement, errorElement) {
     if (inputElement.validity.patternMismatch) {
         inputElement.setCustomValidity('Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы.');
@@ -42,7 +42,7 @@ export function clearValidationErrors(formElement) {
 
 // Для формы "Редактировать профиль"
 editProfilePopupForm.addEventListener('input', function (e) {
-    editProfilePopupForm.classList.remove('disable-invalid-styles');
+    editProfilePopupForm.classList.remove('popup_disable-invalid-styles');
     const inputElement = e.target;
     const errorElement = editProfilePopupForm.querySelector(`.error_${inputElement.name}`);
     validateInput(inputElement, errorElement);
@@ -50,18 +50,27 @@ editProfilePopupForm.addEventListener('input', function (e) {
 });
 
 // Для формы "Новое место"
-newPlacePopupForm.addEventListener('input', function (e) {
-    // Удаляем класс, чтобы включить стили :invalid после первого взаимодействия
-    newPlacePopupForm.classList.remove('disable-invalid-styles');
+// Для поля "Название"
+const placeNameInput = newPlacePopupForm.querySelector('[name="place-name"]');
+placeNameInput.addEventListener('input', function (e) {
     const inputElement = e.target;
-    const errorElement = newPlacePopupForm.querySelector(`.error_${inputElement.name}`);
-    validateInput(inputElement, errorElement);
+    const errorElement = newPlacePopupForm.querySelector('.error_place-name');
+    validateInput(placeNameInput, errorElement);
     toggleButtonState(newPlacePopupForm, newPlaceSubmitButton);
 });
 
+// Для поля "Ссылка на картинку"
+const linkInput = newPlacePopupForm.querySelector('[name="link"]');
+linkInput.addEventListener('input', function (e) {
+    const inputElement = e.target;
+    const errorElement = newPlacePopupForm.querySelector('.error_link');
+    validateInput(linkInput, errorElement);
+    toggleButtonState(newPlacePopupForm, newPlaceSubmitButton);
+})
+
 //Для формы "Обновить аватар"
 updateAvatarPopupForm.addEventListener('input', function (e) {
-    updateAvatarPopupForm.classList.remove('disable-invalid-styles');
+    updateAvatarPopupForm.classList.remove('popup_disable-invalid-styles');
     const inputElement = e.target;
     const errorElement = updateAvatarPopupForm.querySelector(`.error_${inputElement.name}`);
     validateInput(inputElement, errorElement);

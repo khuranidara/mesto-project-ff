@@ -12,10 +12,9 @@ import {
 } from './scripts/card.js';
 
 import {
-    editAvatarSubmitButton,
     closePopup,
     addPopup,
-    profilePopup,
+    profilePopup, editButton, openPopup, addButton
 } from './scripts/modal.js';
 
 const editProfileForm = document.querySelector('.popup__form[name="edit-profile"]');
@@ -28,12 +27,93 @@ import { renderCards } from './scripts/card.js';
 export const cohortId = "wff-cohort-2";
 export const token = "f607a7d2-acc8-4a4e-8521-3c1435e4561a";
 export let currentUserId;
-import {updateAvatarPopup, editProfileSubmitButton, newPlaceSubmitButton} from './scripts/validation.js';
+import {
+    updateAvatarPopup,
+    editProfileSubmitButton,
+    newPlaceSubmitButton,
+    clearValidationErrors, toggleButtonState, updateAvatarPopupForm
+} from './scripts/validation.js';
 const updateAvatarPopupInput = updateAvatarPopup.querySelector('.popup__input_type_avatar-link');
 
 import * as api from './scripts/api.js';
+const avatarImage = document.querySelector('.profile__image');
+const editAvatarPopup = document.querySelector('.popup_type_edit-avatar');
+const editAvatarSubmitButton = editAvatarPopup.querySelector('.popup__button');
+const imagePopup = document.querySelector('.popup_type_image');
+const popupImage = imagePopup.querySelector('.popup__image');
+const popupCaption = imagePopup.querySelector('.popup__caption');
 
+export function openAddPopup() {
+    openPopup(addPopup);
 
+    // Находим форму внутри попапа
+    const formElement = addPopup.querySelector('.popup__form');
+
+    // Если форма найдена, добавляем класс, чтобы временно убрать стили :invalid
+    if (formElement) {
+        formElement.classList.add('popup_disable-invalid-styles');
+        clearValidationErrors(formElement);
+
+        // Используем метод reset() для очистки формы
+        formElement.reset();
+
+        const submitButton = formElement.querySelector('.button');
+        toggleButtonState(formElement, submitButton);
+    }
+};
+export function openUpdateAvatarPopup() {
+    openPopup(updateAvatarPopup);
+
+    if (updateAvatarPopupForm) {
+        updateAvatarPopupForm.classList.add('popup_disable-invalid-styles');
+        clearValidationErrors(updateAvatarPopupForm);
+
+        // Clear input value and disable button
+        if (updateAvatarPopupInput) {
+            updateAvatarPopupInput.value = ''; // Clear the input value
+            toggleButtonState(updateAvatarPopupForm, editAvatarSubmitButton); // Disable the button
+        }
+    }
+};
+export function handlePopupClose(popupElement) {
+    // Находим форму внутри попапа
+    const formElement = popupElement.querySelector('.popup__form');
+
+    // Если форма найдена, вызываем clearValidationErrors
+    if (formElement) {
+        clearValidationErrors(formElement);
+
+        // Очищаем значение инпута в форме "Обновить аватар"
+        const avatarLinkInput = formElement.querySelector('.popup__input_type_avatar-link');
+        if (avatarLinkInput) {
+            avatarLinkInput.value = '';
+        }
+    }
+    closePopup(popupElement);
+};
+editButton.addEventListener('click', function() {
+    nameInput.value = profileName.textContent;
+    jobInput.value = profileJob.textContent;
+    clearValidationErrors(editProfileForm);
+    toggleButtonState(profilePopup,editProfileSubmitButton);
+    openPopup(profilePopup);
+});
+
+addButton.addEventListener('click', () => {
+    openAddPopup();
+});
+
+export function openImagePopup(imageSrc, imageCaption) {
+
+    popupImage.src = imageSrc;
+    popupImage.alt = imageCaption;
+    popupCaption.textContent = imageCaption;
+
+    openPopup(imagePopup);
+};
+avatarImage.addEventListener('click', () => {
+    openUpdateAvatarPopup();
+});
 
 // Обработчик «отправки» формы, хотя пока
 // она никуда отправляться не будет
@@ -45,7 +125,7 @@ function handleAddCardFormSubmit(evt) {
     const cardName = cardNameInput.value;
     const cardLink = cardLinkInput.value;
 
-    newPlaceSubmitButton.textContent = 'Сохранение...';
+    newPlaceSubmitButton.textContent = 'Создание...';
 
     api.addCard(cardName, cardLink)
         .then(newCardData => {
@@ -57,7 +137,7 @@ function handleAddCardFormSubmit(evt) {
         })
         .catch(error => console.error('Ошибка:', error))
         .finally(() => {
-            newPlaceSubmitButton.textContent = 'Сохранить';
+            newPlaceSubmitButton.textContent = 'Создать';
         });
 }
 
@@ -118,7 +198,7 @@ updateAvatarPopup.addEventListener('submit', (event) => {
             avatarElement.style.backgroundImage = `url(${updatedUserData.avatar})`;
 
             // Закрытие формы после успешного обновления
-            closePopup(updateAvatarPopup);
+            handlePopupClose(updateAvatarPopup);
         })
         .catch(error => console.error('Ошибка:', error))
         .finally(() => {

@@ -1,5 +1,4 @@
-import { openImagePopup } from './modal.js';
-import {currentUserId, cohortId, token, cardsDataId} from '../index.js'
+import {openImagePopup, currentUserId} from '../index.js'
 import * as api from './api';
 
 export const addCardForm = document.querySelector('.popup__form[name="new-place"]');

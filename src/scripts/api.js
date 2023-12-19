@@ -1,5 +1,3 @@
-import {cohortId, token} from "../index";
-
 const config = {
     baseUrl: 'https://nomoreparties.co/v1/wff-cohort-2',
     headers: {
@@ -7,6 +5,14 @@ const config = {
         'Content-Type': 'application/json'
     }
 };
+
+function getResponseData(response) {
+    if (!response.ok) {
+        return Promise.reject(`Ошибка: ${response.status}`);
+    }
+    return response.json();
+}
+
 export function addCard(name, link) {
     return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
@@ -16,12 +22,7 @@ export function addCard(name, link) {
             link,
         }),
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        });
+        .then(getResponseData);
 }
 export function editProfile(name, about) {
     return fetch(`${config.baseUrl}/users/me`, {
@@ -32,12 +33,7 @@ export function editProfile(name, about) {
             about,
         }),
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        });
+        .then(getResponseData);
 }
 export function updateAvatar(avatarLink) {
     return fetch(`${config.baseUrl}/users/me/avatar`, {
@@ -47,24 +43,14 @@ export function updateAvatar(avatarLink) {
             avatar: avatarLink, // замените newAvatarLink на avatarLink
         }),
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        });
+        .then(getResponseData);
 }
 export function getUserData() {
     return fetch(`${config.baseUrl}/users/me`, {
         method: 'GET',
         headers: config.headers,
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        });
+        .then(getResponseData);
 }
 
 export function getCardsData() {
@@ -72,12 +58,7 @@ export function getCardsData() {
         method: 'GET',
         headers: config.headers,
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        });
+        .then(getResponseData);
 }
 
 export function likeCard(cardId, isLiked) {
@@ -87,12 +68,7 @@ export function likeCard(cardId, isLiked) {
         method,
         headers: config.headers,
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        });
+        .then(getResponseData);
 }
 
 export function deleteCard(cardId) {
@@ -100,10 +76,5 @@ export function deleteCard(cardId) {
         method: 'DELETE',
         headers: config.headers,
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ошибка! Статус: ${response.status}`);
-            }
-            return response.json();
-        });
+        .then(getResponseData);
 }

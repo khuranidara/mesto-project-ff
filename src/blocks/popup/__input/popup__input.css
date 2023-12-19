@@ -25,7 +25,7 @@ input:invalid {
   border-bottom: 1px solid #FF0000;
 }
 
-.disable-invalid-styles input:invalid {
+.popup_disable-invalid-styles .popup__input:invalid {
   border-bottom: 1px solid rgba(0, 0, 0, 0.15); /* Убираем красное подчеркивание для формы "Новое место" */
 }
 

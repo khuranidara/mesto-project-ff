@@ -8,9 +8,6 @@ const popupImage = imagePopup.querySelector('.popup__image');
 const popupCaption = imagePopup.querySelector('.popup__caption');
 import { nameInput, jobInput, profileJob, profileName } from "../index.js";
 import {clearValidationErrors, toggleButtonState} from "./validation.js";
-const avatarImage = document.querySelector('.profile__image');
-const editAvatarPopup = document.querySelector('.popup_type_edit-avatar');
-export const editAvatarSubmitButton = editAvatarPopup.querySelector('.popup__button');
 export function esc(evt) {
     evt.code === 'Escape' && closePopup(document.querySelector('.popup_is-opened'));
 }
@@ -21,64 +18,12 @@ popups.forEach( function(b) {
     } )
 });
 
-export function openPopup(popupElement, submitButton) {
+export function openPopup(popupElement) {
     popupElement.classList.add('popup_is-opened');
     document.addEventListener('keydown', esc);
-    // Находим форму внутри попапа
-    const formElement = popupElement.querySelector('.popup__form');
-
-    // Если форма найдена, добавляем класс, чтобы временно убрать стили :invalid
-    if (formElement) {
-        formElement.classList.add('disable-invalid-styles');
-        clearValidationErrors(formElement);
-        const inputList = formElement.querySelectorAll('.popup__input');
-        // Проверяем, что это форма "Новое место", и только тогда очищаем форму
-        if (formElement.name === 'new-place') {
-            // Очистка значений инпутов
-            inputList.forEach(input => {
-                input.value = '';
-            });
-        }
-        const submitButton = formElement.querySelector('.button');
-        toggleButtonState(formElement, submitButton);
-    }
 };
 
 export function closePopup(popupElement) {
     popupElement.classList.remove('popup_is-opened');
     document.removeEventListener('keydown', esc);
-    // Находим форму внутри попапа
-    const formElement = popupElement.querySelector('.popup__form');
-
-    // Если форма найдена, вызываем clearValidationErrors
-    if (formElement) {
-        clearValidationErrors(formElement);
-        // Очищаем значение инпута в форме "Обновить аватар"
-        const inputElement = formElement.querySelector('.popup__input_type_avatar-link');
-        if (inputElement) {
-            inputElement.value = '';
-        }
-    }
 };
-
-editButton.addEventListener('click', function() {
-    nameInput.value = profileName.textContent;
-    jobInput.value = profileJob.textContent;
-    openPopup(profilePopup);
-});
-
-addButton.addEventListener('click', () => { 
-    openPopup(addPopup);
-});
-
-export function openImagePopup(imageSrc, imageCaption) {
-
-    popupImage.src = imageSrc;
-    popupImage.alt = imageCaption;
-    popupCaption.textContent = imageCaption;
-
-    openPopup(imagePopup);
-};
-avatarImage.addEventListener('click', () => {
-    openPopup(editAvatarPopup, editAvatarSubmitButton);
-});
