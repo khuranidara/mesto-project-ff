@@ -1,78 +1,100 @@
-const profilePopup = document.querySelector('.popup_type_edit');
-const editProfilePopupForm=  profilePopup.querySelector('.popup__form');
-export const editProfileSubmitButton = editProfilePopupForm.querySelector('.button');
-const newPlacePopup = document.querySelector('.popup_type_new-card');
-const newPlacePopupForm = newPlacePopup.querySelector('.popup__form');
-export const newPlaceSubmitButton = newPlacePopupForm.querySelector('.button');
-export const updateAvatarPopup = document.querySelector('.popup_type_edit-avatar');
-export const updateAvatarPopupForm =updateAvatarPopup.querySelector('.popup__form');
-export const updateAvatarSubmitButton = updateAvatarPopupForm.querySelector('.button');
-function validateInput(inputElement, errorElement) {
+// Функция isValid теперь принимает formElement и inputElement,
+// а не берёт их из внешней области видимости
+
+const isValid = (formElement, inputElement, validationConfig) => {
     if (inputElement.validity.patternMismatch) {
-        inputElement.setCustomValidity('Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы.');
+        inputElement.setCustomValidity(inputElement.dataset.errorMessage);
     } else {
         inputElement.setCustomValidity("");
     }
 
     if (!inputElement.validity.valid) {
-        errorElement.textContent = inputElement.validationMessage;
+        showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
     } else {
-        errorElement.textContent = "";
+        hideInputError(formElement, inputElement, validationConfig);
     }
-}
+};
+const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
+    // Находим элемент ошибки внутри самой функции
+    const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+    // Остальной код такой же
+    inputElement.classList.add(validationConfig.inputErrorClass);
+    errorElement.textContent = errorMessage;
+    errorElement.classList.add(validationConfig.errorClass);
+};
 
-export function toggleButtonState(formElement, submitButton) {
-    const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-    const hasInvalidInputs = inputList.some((inputElement) => !inputElement.validity.valid);
-    submitButton.disabled = hasInvalidInputs;
-}
+const hideInputError = (formElement, inputElement, validationConfig) => {
+    // Находим элемент ошибки
+    const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+    // Остальной код такой же
+    inputElement.classList.remove(validationConfig.inputErrorClass);
+    errorElement.classList.remove(validationConfig.errorClass);
+    errorElement.textContent = '';
+};
 
-export function clearValidationErrors(formElement) {
-    const inputList = formElement.querySelectorAll('.popup__input');
-    const errorList = formElement.querySelectorAll('.error');
-
-    inputList.forEach(input => {
-        input.setCustomValidity(''); // Сброс кастомных сообщений валидации
+function setEventListeners(formElement, validationConfig) {
+    // Находим все поля внутри формы,
+    // сделаем из них массив методом Array.from
+    const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+    const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
+    // Вызовем toggleButtonState, чтобы не ждать ввода данных в поля
+    toggleButtonState(inputList, buttonElement, validationConfig);
+    // Обойдём все элементы полученной коллекции
+    inputList.forEach((inputElement) => {
+        // каждому полю добавим обработчик события input
+        inputElement.addEventListener('input', () => {
+            // Внутри колбэка вызовем isValid,
+            // передав ей форму и проверяемый элемент
+            isValid(formElement, inputElement, validationConfig);
+            toggleButtonState(inputList,buttonElement, validationConfig);
+        });
     });
+};
 
-    errorList.forEach(error => {
-        error.textContent = ''; // Очистка текста ошибок
+export function enableValidation(validationConfig) {
+    // Найдём все формы с указанным классом в DOM,
+    // сделаем из них массив методом Array.from
+    const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
+    // Переберём полученную коллекцию
+    formList.forEach((formElement) => {
+        // Для каждой формы вызовем функцию setEventListeners,
+        // передав ей элемент формы
+        setEventListeners(formElement, validationConfig);
     });
+};
+
+// Функция принимает массив полей
+
+const hasInvalidInput = (inputList) => {
+    // проходим по этому массиву методом some
+    return inputList.some((inputElement) => {
+        // Если поле не валидно, колбэк вернёт true
+        // Обход массива прекратится и вся функция
+        // hasInvalidInput вернёт true
+        return !inputElement.validity.valid;
+    })
+};
+// Функция принимает массив полей ввода
+// и элемент кнопки, состояние которой нужно менять
+
+const toggleButtonState = (inputList, buttonElement, validationConfig) => {
+    // Если есть хотя бы один невалидный инпут
+    if (hasInvalidInput(inputList)) {
+        // сделай кнопку неактивной
+        buttonElement.disabled = true;
+        buttonElement.classList.add(validationConfig.inactiveButtonClass);
+    } else {
+        // иначе сделай кнопку активной
+        buttonElement.disabled = false;
+        buttonElement.classList.remove(validationConfig.inactiveButtonClass);
+    }
+};
+
+export function clearValidation(formElement, validationConfig) {
+    const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+    const button = formElement.querySelector(validationConfig.submitButtonSelector);
+    inputList.forEach((input) => {
+        hideInputError(formElement, input, validationConfig);
+    })
+    toggleButtonState(inputList, button, validationConfig);
 }
-
-// Для формы "Редактировать профиль"
-editProfilePopupForm.addEventListener('input', function (e) {
-    editProfilePopupForm.classList.remove('popup_disable-invalid-styles');
-    const inputElement = e.target;
-    const errorElement = editProfilePopupForm.querySelector(`.error_${inputElement.name}`);
-    validateInput(inputElement, errorElement);
-    toggleButtonState(editProfilePopupForm, editProfileSubmitButton);
-});
-
-// Для формы "Новое место"
-// Для поля "Название"
-const placeNameInput = newPlacePopupForm.querySelector('[name="place-name"]');
-placeNameInput.addEventListener('input', function (e) {
-    const inputElement = e.target;
-    const errorElement = newPlacePopupForm.querySelector('.error_place-name');
-    validateInput(placeNameInput, errorElement);
-    toggleButtonState(newPlacePopupForm, newPlaceSubmitButton);
-});
-
-// Для поля "Ссылка на картинку"
-const linkInput = newPlacePopupForm.querySelector('[name="link"]');
-linkInput.addEventListener('input', function (e) {
-    const inputElement = e.target;
-    const errorElement = newPlacePopupForm.querySelector('.error_link');
-    validateInput(linkInput, errorElement);
-    toggleButtonState(newPlacePopupForm, newPlaceSubmitButton);
-})
-
-//Для формы "Обновить аватар"
-updateAvatarPopupForm.addEventListener('input', function (e) {
-    updateAvatarPopupForm.classList.remove('popup_disable-invalid-styles');
-    const inputElement = e.target;
-    const errorElement = updateAvatarPopupForm.querySelector(`.error_${inputElement.name}`);
-    validateInput(inputElement, errorElement);
-    toggleButtonState(updateAvatarPopupForm, updateAvatarSubmitButton);
-});

@@ -1,12 +1,13 @@
-import {openImagePopup, currentUserId} from '../index.js'
+import { openImagePopup, currentUserId } from '../index';
 import * as api from './api';
-
+// Константы для работы с DOM-элементами
 export const addCardForm = document.querySelector('.popup__form[name="new-place"]');
 export const cardNameInput = addCardForm.querySelector('.popup__input_type_card-name');
 export const cardLinkInput = addCardForm.querySelector('.popup__input_type_url');
-export const placesList = document.querySelector(".places__list");
-export const cardTemplate = document.querySelector("#card-template").content;
+export const placesList = document.querySelector(".places__list"); // Список для отрисовки карточек
+export const cardTemplate = document.querySelector("#card-template").content; // Шаблон карточки
 
+// Функция для лайка карточки
 function handleLikeClick(evt, cardId, likeCount) {
     if (!cardId) {
         console.error('Ошибка: не указан cardId');
@@ -14,11 +15,11 @@ function handleLikeClick(evt, cardId, likeCount) {
     }
     const isLiked = evt.target.classList.contains('card__like-button_is-active');
     api.likeCard(cardId, isLiked)
-    .then(updatedCardData => {
-        evt.target.classList.toggle('card__like-button_is-active');
-        likeCount.textContent = updatedCardData.likes.length;
-    })
-    .catch(error => console.error('Ошибка:', error));
+        .then(updatedCardData => {
+            evt.target.classList.toggle('card__like-button_is-active');
+            likeCount.textContent = updatedCardData.likes.length;
+        })
+        .catch(error => console.error('Ошибка:', error));
 }
 
 function handleDeleteCard(evt, cardId) {
@@ -33,7 +34,7 @@ function handleDeleteCard(evt, cardId) {
 function handleCardClick(imageSrc, imageName) {
     openImagePopup(imageSrc, imageName);
 }
-
+// Функция для создания карточки
 export function createCard(data, handleLike, handleDeleteCard, handleCardClick) {
     const cardElement = cardTemplate.cloneNode(true);
     const cardImage = cardElement.querySelector(".card__image");
@@ -59,13 +60,14 @@ export function createCard(data, handleLike, handleDeleteCard, handleCardClick) 
     return cardElement;
 }
 
+// Функция для отрисовки начальных карточек
 export function renderCards(cards) {
     cards.forEach(cardData => {
         const cardElement = createCard(cardData, handleLikeClick, handleDeleteCard, handleCardClick);
         placesList.append(cardElement);
     });
 }
-
+// Функция для создания новой карточки
 export function createNewCard(cardData) {
     return createCard(cardData, handleLikeClick, handleDeleteCard, handleCardClick);
 }

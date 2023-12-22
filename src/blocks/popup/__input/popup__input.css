@@ -21,15 +21,13 @@
   }
 }
 
-input:invalid {
-  border-bottom: 1px solid #FF0000;
+.popup__input_type_error {
+  border-bottom-color: red;
+  /* Нижняя рамка становится красной всякий раз,
+  когда введённые данные некорректны */
 }
 
-.popup_disable-invalid-styles .popup__input:invalid {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15); /* Убираем красное подчеркивание для формы "Новое место" */
-}
-
-.error {
+.popup__error_visible {
   font-family: Inter;
   font-size: 12px;
   font-weight: 400;
