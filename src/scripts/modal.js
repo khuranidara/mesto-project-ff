@@ -1,5 +1,3 @@
-import {clearValidation} from "./validation";
-
 export const editButton = document.querySelector('.profile__edit-button');
 export const addButton = document.querySelector('.profile__add-button');
 export const addPopup = document.querySelector('.popup_type_new-card');
@@ -8,7 +6,6 @@ export const popups = document.querySelectorAll('.popup');
 export const imagePopup = document.querySelector('.popup_type_image');
 export const popupImage = imagePopup.querySelector('.popup__image');
 export const popupCaption = imagePopup.querySelector('.popup__caption');
-import { nameInput, jobInput, profileJob, profileName } from "../index.js";
 
 export function esc(evt) {
     evt.code === 'Escape' && closePopup(document.querySelector('.popup_is-opened'));
